@@ -19,6 +19,6 @@ go test ./...
 go test -fuzz=FuzzEncode -fuzztime=30s -parallel=2
 ```
 
-The regular suite covers fixed input/output pairs, a deterministic payload corpus with varying leading-zero prefixes, and invalid characters at decoder chunk boundaries. The fuzz target varies binary payloads up to 256 bytes and checks both directions. Go saves a minimized failure in `testdata/fuzz/FuzzEncode/` and prints the exact replay command. Commit a confirmed failure there to include it in subsequent ordinary test runs.
+The regular suite includes all 21 [Bitcoin Core v29.0 Base58 vectors](https://github.com/bitcoin/bitcoin/blob/v29.0/src/test/data/base58_encode_decode.json), stored under the [upstream MIT license](testdata/COPYING.bitcoin-core). It also covers fixed input/output pairs, a deterministic payload corpus with varying leading-zero prefixes, and invalid characters at decoder chunk boundaries. The fuzz target varies binary payloads up to 256 bytes and checks both directions. Go saves a minimized failure in `testdata/fuzz/FuzzEncode/` and prints the exact replay command. Commit a confirmed failure there to include it in subsequent ordinary test runs.
 
 To compare a dependency upgrade, change its version in `go.mod`, run `go mod tidy` and rerun the corpus. A discrepancy identifies a case to investigate. Two implementations can agree on the same mistake, so the suite also checks fixed expected values.
