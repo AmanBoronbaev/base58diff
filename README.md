@@ -12,6 +12,16 @@ Each command runs both [btcutil](https://github.com/btcsuite/btcd/tree/master/bt
 
 The program exits with 0 when both libraries agree, including when both reject a string. Exit 1 reports a disagreement or failed round trip on stderr. Exit 2 indicates a command or input error. Empty bytes encode to empty text. Empty text is excluded from decode comparisons because the libraries expose different empty-input behavior. Inputs use raw Base58 without a version byte or Base58Check checksum.
 
+## Replay a vector file
+
+```sh
+go run . check testdata/bitcoin-core-base58.json
+# 21 vectors passed
+printf '%s\n' '[["000039","11z"]]' | go run . check -
+```
+
+Supply a JSON array of hex/Base58 string pairs. The checker streams one pair at a time and reports the first failing vector by its one-based index. A compiled binary exits with 1 for a mismatch and 2 for malformed or empty files.
+
 ## Run the corpus
 
 ```sh
