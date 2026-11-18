@@ -12,6 +12,17 @@ Each command runs both [btcutil](https://github.com/btcsuite/btcd/tree/master/bt
 
 The program exits with 0 when both libraries agree, including when both reject a string. Exit 1 reports a disagreement or failed round trip on stderr. Exit 2 indicates a command or input error. Empty bytes encode to empty text. Empty text is excluded from decode comparisons because the libraries expose different empty-input behavior. Inputs use raw Base58 without a version byte or Base58Check checksum.
 
+## Install
+
+With Go 1.22 or later:
+
+```sh
+go install github.com/AmanBoronbaev/base58diff@v0.1.0
+base58diff decode 11z
+```
+
+The command is installed in `GOBIN`, or in `$(go env GOPATH)/bin` by default.
+
 ## Replay a vector file
 
 ```sh

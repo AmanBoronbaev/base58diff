@@ -1,4 +1,4 @@
-module base58diff
+module github.com/AmanBoronbaev/base58diff
 
 go 1.22
 
