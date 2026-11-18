@@ -33,6 +33,16 @@ func TestCLI(t *testing.T) {
 		{[]string{"encode", "000039"}, 0, "11z\n"},
 		{[]string{"decode", "11z"}, 0, "000039\n"},
 		{[]string{"decode", "0"}, 0, "rejected\n"},
+		{[]string{"encode-check", "00010966776006953d5567439e5e39f86a0d273bee"}, 0, "16UwLL9Risc3QfPqBUvKofHmBQ7wMtjvM\n"},
+		{[]string{"decode-check", "16UwLL9Risc3QfPqBUvKofHmBQ7wMtjvM"}, 0, "00010966776006953d5567439e5e39f86a0d273bee\n"},
+		{[]string{"decode-check", "16UwLL9Risc3QfPqBUvKofHmBQ7wMtjvN"}, 0, "rejected\n"},
+		{[]string{"decode-check", "1111"}, 0, "rejected\n"},
+		{[]string{"decode-check", "11111"}, 0, "rejected\n"},
+		{[]string{"decode-check", "O"}, 0, "rejected\n"},
+		{[]string{"encode-check", "00"}, 0, "1Wh4bh\n"},
+		{[]string{"decode-check", "1Wh4bh"}, 0, "00\n"},
+		{[]string{"encode-check", ""}, 2, ""},
+		{[]string{"encode-check", "z"}, 2, ""},
 		{[]string{"decode", ""}, 2, ""}, {[]string{"encode", "f"}, 2, ""},
 	} {
 		var out, diag bytes.Buffer

@@ -7,9 +7,11 @@ import (
 	"os"
 )
 
+const usage = "usage: base58diff encode HEX | decode BASE58 | encode-check HEX | decode-check BASE58 | check FILE|-"
+
 func run(args []string, out, diagnostics io.Writer) int {
 	if len(args) != 2 {
-		fmt.Fprintln(diagnostics, "usage: base58diff encode HEX | decode BASE58 | check FILE|-")
+		fmt.Fprintln(diagnostics, usage)
 		return 2
 	}
 	var value string
@@ -33,13 +35,23 @@ func run(args []string, out, diagnostics io.Writer) int {
 		}
 		fmt.Fprintf(out, "%d vectors passed\n", count)
 		return 0
-	case "encode":
+	case "encode", "encode-check":
 		data, parseErr := hex.DecodeString(args[1])
 		if parseErr != nil {
 			fmt.Fprintln(diagnostics, parseErr)
 			return 2
 		}
-		value, err = compareEncode(data)
+		if args[0] == "encode-check" {
+			if len(data) == 0 {
+				fmt.Fprintln(diagnostics, "Base58Check requires a version byte")
+				return 2
+			}
+			value, err = compareCheckEncode(data)
+		} else {
+			value, err = compareEncode(data)
+		}
+	case "decode-check":
+		value, err = compareCheckDecode(args[1])
 	case "decode":
 		if args[1] == "" {
 			fmt.Fprintln(diagnostics, "empty text is outside the shared decode contract")
@@ -47,7 +59,7 @@ func run(args []string, out, diagnostics io.Writer) int {
 		}
 		value, err = compareDecode(args[1])
 	default:
-		fmt.Fprintln(diagnostics, "expected encode, decode or check")
+		fmt.Fprintln(diagnostics, usage)
 		return 2
 	}
 	if err != nil {
