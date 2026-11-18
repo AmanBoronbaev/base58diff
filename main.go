@@ -7,10 +7,11 @@ import (
 	"os"
 )
 
-const usage = "usage: base58diff encode HEX | decode BASE58 | encode-check HEX | decode-check BASE58 | check FILE|-"
+const usage = "usage: base58diff encode HEX | decode BASE58 | encode-check HEX | decode-check BASE58 | check [--base58check] FILE|-"
 
 func run(args []string, out, diagnostics io.Writer) int {
-	if len(args) != 2 {
+	base58Check := len(args) == 3 && args[0] == "check" && args[1] == "--base58check"
+	if len(args) != 2 && !base58Check {
 		fmt.Fprintln(diagnostics, usage)
 		return 2
 	}
@@ -19,8 +20,9 @@ func run(args []string, out, diagnostics io.Writer) int {
 	switch args[0] {
 	case "check":
 		var input io.Reader = os.Stdin
-		if args[1] != "-" {
-			file, err := os.Open(args[1])
+		path := args[len(args)-1]
+		if path != "-" {
+			file, err := os.Open(path)
 			if err != nil {
 				fmt.Fprintln(diagnostics, err)
 				return 2
@@ -28,7 +30,7 @@ func run(args []string, out, diagnostics io.Writer) int {
 			defer file.Close()
 			input = file
 		}
-		count, code, err := checkCorpus(input)
+		count, code, err := checkCorpus(input, base58Check)
 		if err != nil {
 			fmt.Fprintln(diagnostics, err)
 			return code

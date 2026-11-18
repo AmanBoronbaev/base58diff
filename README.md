@@ -44,6 +44,15 @@ go run . check testdata/bitcoin-core-base58.json
 printf '%s\n' '[["000039","11z"]]' | go run . check -
 ```
 
+For Base58Check vectors, pass `--base58check`. The first column contains version-prefixed hex bytes with the checksum omitted. The second column contains the complete checksummed string.
+
+```sh
+go run . check --base58check testdata/bip32-xpub.json
+# 17 vectors passed
+```
+
+The bundled corpus covers all 17 extended public keys in [BIP 32 test vectors 1–4](https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki#test-vectors). The expected 78-byte payloads were recovered from the published strings using integer base conversion and verified against their double-SHA-256 checksums. The vectors are distributed under the [BIP's license](testdata/COPYING.bip32).
+
 Supply a JSON array of hex/Base58 string pairs. The checker streams one pair at a time and reports the first failing vector by its one-based index. A compiled binary exits with 1 for a mismatch and 2 for malformed or empty files.
 
 ## Run the corpus

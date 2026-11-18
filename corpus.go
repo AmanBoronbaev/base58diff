@@ -8,9 +8,13 @@ import (
 	"strings"
 )
 
-// checkCorpus consumes Bitcoin Core's JSON array of [hex, base58] pairs.
+// checkCorpus consumes a JSON array of [hex, encoded text] pairs.
 // It keeps one vector in memory and stops at the first failing row.
-func checkCorpus(r io.Reader) (count, code int, err error) {
+func checkCorpus(r io.Reader, base58Check bool) (count, code int, err error) {
+	encode, decode := compareEncode, compareDecode
+	if base58Check {
+		encode, decode = compareCheckEncode, compareCheckDecode
+	}
 	d := json.NewDecoder(r)
 	token, err := d.Token()
 	if err != nil {
@@ -31,7 +35,10 @@ func checkCorpus(r io.Reader) (count, code int, err error) {
 		if err != nil {
 			return count, 2, fmt.Errorf("vector %d: %w", count+1, err)
 		}
-		encoded, err := compareEncode(raw)
+		if base58Check && len(raw) == 0 {
+			return count, 2, fmt.Errorf("vector %d: Base58Check requires a version byte", count+1)
+		}
+		encoded, err := encode(raw)
 		if err != nil {
 			return count, 1, fmt.Errorf("vector %d: %w", count+1, err)
 		}
@@ -39,7 +46,7 @@ func checkCorpus(r io.Reader) (count, code int, err error) {
 			return count, 1, fmt.Errorf("vector %d: encode %s: got %q, want %q", count+1, *pair[0], encoded, *pair[1])
 		}
 		if encoded != "" {
-			decoded, err := compareDecode(*pair[1])
+			decoded, err := decode(*pair[1])
 			if err != nil {
 				return count, 1, fmt.Errorf("vector %d: %w", count+1, err)
 			}
