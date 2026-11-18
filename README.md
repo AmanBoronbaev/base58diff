@@ -30,7 +30,7 @@ The checker compares btcutil's Base58Check API with mr-tron plus a four-byte dou
 With Go 1.22 or later:
 
 ```sh
-go install github.com/AmanBoronbaev/base58diff@v0.2.0
+go install github.com/AmanBoronbaev/base58diff@v0.3.0
 base58diff decode 11z
 ```
 
